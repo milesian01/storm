@@ -110,8 +110,8 @@ def main(args):
         case "google":
             from knowledge_storm.rm import GoogleSearch
             rm = GoogleSearch(
-                api_key=os.getenv("GOOGLE_API_KEY"),
-                cx=os.getenv("GOOGLE_CX"),
+                google_search_api_key=os.getenv("GOOGLE_API_KEY"),
+                google_cse_id=os.getenv("GOOGLE_CX"),
                 k=engine_args.search_top_k,
             )
         case _:

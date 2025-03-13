@@ -224,7 +224,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--retriever",
         type=str,
-        choices=["bing", "you", "brave", "serper", "duckduckgo", "tavily", "searxng"],
+        choices=["bing", "you", "brave", "serper", "duckduckgo", "tavily", "searxng", "google"],
         help="The search engine API to use for retrieving information.",
     )
     # stage of the pipeline

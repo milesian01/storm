@@ -25,3 +25,4 @@ build/
 *results/
 .venv/
 .aider*
+secrets.toml

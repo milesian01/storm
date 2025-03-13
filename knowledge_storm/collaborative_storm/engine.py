@@ -1,5 +1,25 @@
-import dspy
 import os
+import toml
+
+# Load secrets from the secrets.toml file
+secrets = toml.load("secrets.toml")
+
+# Set environment variables (or use them directly)
+os.environ["OLLAMA_API_URL"] = secrets["OLLAMA_API_URL"]
+os.environ["GOOGLE_API_KEY"] = secrets["GOOGLE_API_KEY"]
+os.environ["GOOGLE_CX"] = secrets["GOOGLE_CX"]
+
+# Now, you can retrieve them using os.getenv in the following configuration.
+ollama_api_url = os.getenv("OLLAMA_API_URL")
+google_api_key = os.getenv("GOOGLE_API_KEY")
+google_cx = os.getenv("GOOGLE_CX")
+
+print("Loaded configuration:")
+print("Ollama API URL:", ollama_api_url)
+print("Google API Key:", google_api_key)
+print("Google CX:", google_cx)
+
+import dspy
 from dataclasses import dataclass, field, asdict
 from typing import List, Union, Literal, Optional, Dict
 

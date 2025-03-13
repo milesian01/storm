@@ -107,16 +107,9 @@ def main(args):
             rm = SearXNG(
                 searxng_api_key=os.getenv("SEARXNG_API_KEY"), k=engine_args.search_top_k
             )
-        case "google":
-            from knowledge_storm.rm import GoogleSearch
-            rm = GoogleSearch(
-                api_key=os.getenv("GOOGLE_API_KEY"),
-                cx=os.getenv("GOOGLE_CX"),
-                k=engine_args.search_top_k,
-            )
         case _:
             raise ValueError(
-                f'Invalid retriever: {args.retriever}. Choose one of the supported retrievers.'
+                f'Invalid retriever: {args.retriever}. Choose either "bing", "you", "brave", "duckduckgo", "serper", "tavily", or "searxng"'
             )
 
     runner = STORMWikiRunner(engine_args, lm_configs, rm)
@@ -224,7 +217,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--retriever",
         type=str,
-        choices=["bing", "you", "brave", "serper", "duckduckgo", "tavily", "searxng", "google"],
+        choices=["bing", "you", "brave", "serper", "duckduckgo", "tavily", "searxng"],
         help="The search engine API to use for retrieving information.",
     )
     # stage of the pipeline

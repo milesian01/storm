@@ -522,23 +522,52 @@ class DiscourseManager:
         return next_turn_policy
 
 
+from knowledge_storm import STORMWikiRunnerArguments, STORMWikiLMConfigs
+from knowledge_storm.lm import LitellmModel
+from knowledge_storm.rm import GoogleSearch
+
 class CoStormRunner:
     def __init__(
         self,
-        lm_config: CollaborativeStormLMConfigs,
         runner_argument: RunnerArgument,
         logging_wrapper: LoggingWrapper,
-        rm: Optional[dspy.Retrieve] = None,
         callback_handler: BaseCallbackHandler = None,
     ):
         self.runner_argument = runner_argument
-        self.lm_config = lm_config
         self.logging_wrapper = logging_wrapper
         self.callback_handler = callback_handler
-        if rm is None:
-            self.rm = BingSearch(k=runner_argument.retrieve_top_k)
-        else:
-            self.rm = rm
+
+        # Configure language model settings with your local Ollama instance
+        lm_configs = STORMWikiLMConfigs()
+        local_model_kwargs = {
+            "api_url": os.getenv("OLLAMA_API_URL", "http://192.168.50.250:30068/"),
+            # Include any additional parameters if needed by your Ollama setup
+        }
+
+        # Use the same model for all stages as a starting point
+        ollama_model = LitellmModel(
+            model="deepseek-r1:32b-qwen-distill-q8_0-maxctx-32k-out32k", 
+            max_tokens=500, 
+            **local_model_kwargs
+        )
+
+        lm_configs.set_question_answering_lm(ollama_model)
+        lm_configs.set_discourse_manage_lm(ollama_model)
+        lm_configs.set_utterance_polishing_lm(ollama_model)
+        lm_configs.set_warmstart_outline_gen_lm(ollama_model)
+        lm_configs.set_question_asking_lm(ollama_model)
+        lm_configs.set_knowledge_base_lm(ollama_model)
+
+        # Configure the Google retriever
+        google_rm = GoogleSearch(
+            api_key=os.getenv("GOOGLE_API_KEY"),
+            cx=os.getenv("GOOGLE_CX"),
+            k=runner_argument.retrieve_top_k  # adjust the number of top search results as needed
+        )
+
+        self.lm_config = lm_configs
+        self.rm = google_rm
+
         self.encoder = Encoder()
         self.conversation_history = []
         self.warmstart_conv_archive = []
